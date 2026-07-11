@@ -1,0 +1,62 @@
+trigger LeadServiceUpdate on Lead (before update) {
+System.debug('LeadUpdate trigger called');
+    for (Lead l : Trigger.new) {
+		try{
+			//EddyLeadHelper.insertLog('Trigger:LeadServiceUpdate', l.id, 'LeadServiceUpdate called lead is' +  l);
+
+			if(!String.isBlank(l.Country)){
+				if(l.Country == 'United States')
+				  l.Country = 'US';
+				else if(l.Country == 'Canada')
+				 l.Country = 'CA';
+			} 
+        
+			Lead oldLead = Trigger.oldMap.get( l.Id );
+        
+			//Avoid calling lead service if lead update is coming from API
+			if(l.From_API__c==true) {
+				System.debug('LeadServiceUpdate: Skipping calling LeadService, lead coming from AzureFunction l.From_API__c==true ' + l);
+				//EddyLeadHelper.insertLog('Trigger:LeadServiceUpdate', l.id, 'LeadServiceUpdate: Skipping calling LeadService, lead coming from AzureFunction l.From_API__c==true');
+				l.From_API__c = false;
+				continue;
+			}
+
+			//Avoid calling lead service on insert
+			if(oldLead.CreatedDate==null){
+				System.debug('LeadServiceUpdate: OldLead was a new inserted lead skipping update');
+				//EddyLeadHelper.insertLog('Trigger:LeadServiceUpdate', l.id, 'LeadServiceUpdate: OldLead was a new inserted lead skipping update');
+				continue;
+			}
+        
+			//Call lead service only if data of interest changed
+			if(!EddyLeadHelper.leadChanged(oldLead, l)){
+				System.debug('LeadServiceUpdate: OldLead tracked data not changed skipping update');
+				//EddyLeadHelper.insertLog('Trigger:LeadServiceUpdate', l.id, 'LeadServiceUpdate: OldLead tracked data not changed skipping update');
+				continue;
+			}
+
+			JSONGenerator gen = JSON.createGenerator(false);
+			gen.writeStartObject();
+
+			//Authentication and transaction
+			EddyLeadHelper.addMessageHeaders(gen);
+
+			//Lead body
+			EddyLeadHelper.addLeadId(l.Id,gen);
+
+			gen.writeEndObject();
+        
+			String leadJson = gen.getAsString();
+			System.debug('LeadServiceUpdate: JSON lead generated' + leadJson);
+			//EddyLeadHelper.insertLog('Trigger:LeadServiceUpdate', l.id, 'LeadServiceUpdate: JSON lead generated, calling service...');
+            
+            // make the asynchronous web service callout
+            //WebServiceCallout.callService('/api/test/Echo', leadJson);
+            WebServiceCallout.callService('/api/emslead/updatefromsalesforcebyid', leadJson, l.id);   
+		}
+		catch(System.Exception e) {
+            System.debug('Trigger:LeadServiceUpdate error: '+ e);
+			EddyLeadHelper.insertLog('Trigger:LeadServiceUpdate', l.id, 'LeadServiceUpdate general exception: '+ e);
+        }
+    }
+}

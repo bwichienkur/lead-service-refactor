@@ -1,0 +1,179 @@
+public class EddyLeadHelper {
+
+    public static void insertLog(string functionName, string leadId, string message){
+        EddyLog__c log = new EddyLog__c();
+        log.Name = functionName;
+        log.LeadId__c = leadId;
+        log.Message__c = message;
+        insert log;
+    }
+
+    public static string getGUID()
+    {
+       String h = EncodingUtil.ConvertTohex(Crypto.GenerateAESKey(128));
+       String guid = h.SubString(0,8)+ '-' + h.SubString(8,12) + '-' + h.SubString(12,16) + '-' + h.SubString(16,20) + '-' + h.substring(20);
+
+       return guid;
+    }
+
+    public static void addMessageHeaders(JSONGenerator gen)
+    {
+       gen.writeStringField('AuthenticationToken','79E209BC-666B-4660-B566-732B81FC9AA2');
+       gen.writeStringField('TransactionId',getGUID());
+    }
+
+    public static boolean leadChanged(Lead oldLead, Lead newLead){
+     boolean Result = false;
+
+     Result = Result || oldLead.Status != newLead.Status;
+     Result = Result || oldLead.Lead_Sub_Status__c != newLead.Lead_Sub_Status__c;
+     Result = Result || oldLead.Lead_State__c != newLead.Lead_State__c;
+     Result = Result || oldLead.Assigned_Advisor__c != newLead.Assigned_Advisor__c;
+     Result = Result || oldLead.FirstName != newLead.FirstName;
+     Result = Result || oldLead.LastName != newLead.LastName;
+     Result = Result || oldLead.Email != newLead.Email;
+     Result = Result || oldLead.Phone != newLead.Phone;
+     Result = Result || oldLead.Other_Phone__c != newLead.Other_Phone__c;
+     Result = Result || oldLead.City != newLead.City;
+     Result = Result || oldLead.State != newLead.State;
+     Result = Result || oldLead.Country != newLead.Country;
+     Result = Result || oldLead.PostalCode != newLead.PostalCode;
+     Result = Result || oldLead.Education_Level__c != newLead.Education_Level__c;
+     Result = Result || oldLead.Start_Term__c != newLead.Start_Term__c;
+     Result = Result || oldLead.Account__c != newLead.Account__c;
+     Result = Result || oldLead.Degree__c != newLead.Degree__c;
+     Result = Result || oldLead.Notes__c != newLead.Notes__c;
+     Result = Result || oldLead.HasOptedOutOfEmail != newLead.HasOptedOutOfEmail;
+     Result = Result || oldLead.Street != newLead.Street;
+     Result = Result || oldLead.Closed_Reason_Code__c != newLead.Closed_Reason_Code__c;
+     Result = Result || oldLead.IsTest__c != newLead.IsTest__c;
+     Result = Result || oldLead.ExternalIdentifier__c != newLead.ExternalIdentifier__c;
+	 Result = Result || oldLead.Client_Status__c != newLead.Client_Status__c;
+     Result = Result || oldLead.Stealth_App__c != newLead.Stealth_App__c;
+     Result = Result || oldLead.RewarmingIndicator__c != newLead.RewarmingIndicator__c;
+     Result = Result || oldLead.App_Dial_Outcome__c != newLead.App_Dial_Outcome__c;
+     Result = Result || oldLead.Rewarming_Dial_Outcome__c != newLead.Rewarming_Dial_Outcome__c;
+     Result = Result || oldLead.Rewarming_Contact_Attempts__c != newLead.Rewarming_Contact_Attempts__c;
+     Result = Result || oldLead.tdc_tsw__SMS_Opt_out__c != newLead.tdc_tsw__SMS_Opt_out__c;
+     Result = Result || oldLead.Utm_Channel__c != newLead.Utm_Channel__c; 
+
+     return Result;
+    }
+    
+    public static void addLeadId(string leadId,JSONGenerator gen){
+        System.debug('addLeadId Start LeadId=' + leadId);
+        gen.writeStringField('SalesforceId', leadId);
+    }
+    
+    public static void addLeadInfo(Lead l,JSONGenerator gen){
+        gen.writeFieldName('Lead');
+        gen.writeStartObject();
+        System.debug('addLeadInfo Start Lead=' + l);
+        gen.writeStringField('SalesforceId',l.Id);
+        gen.writeStringField('CurrentStatus',l.Status);
+        gen.writeStringField('CurrentSubStatus',String.isBlank(l.Lead_Sub_Status__c) ? '' : l.Lead_Sub_Status__c);
+        gen.writeStringField('CurrentState',String.isBlank(l.Lead_State__c) ? '' : l.Lead_State__c);
+        
+        User retrievedUser = null;
+        if(l.Assigned_Advisor__c!=null){
+            retrievedUser = [SELECT Id, Name FROM User WHERE Id = :l.Assigned_Advisor__c];
+        }
+        
+        
+        Start_Term__c retrievedStartTerm = null;
+        if(l.Start_Term__c!=null){
+            retrievedStartTerm = [SELECT Name FROM Start_Term__c WHERE Id = :l.Start_Term__c];
+        }
+        
+        gen.writeStringField('LeadOwner',retrievedUser==null || String.isBlank(retrievedUser.Name)? '' : retrievedUser.Name);
+        gen.writeStringField('FirstName',String.isBlank(l.FirstName) ? '' : l.FirstName);
+        gen.writeStringField('LastName',String.isBlank(l.LastName) ? '' : l.LastName);
+        gen.writeStringField('Email',String.isBlank(l.Email) ? '': l.Email);
+        gen.writeStringField('Phone1',String.isBlank(l.Phone) ? '' : l.Phone);
+        gen.writeStringField('Phone2',String.isBlank(l.Other_Phone__c) ? '' : l.Other_Phone__c);
+        gen.writeStringField('Address1',String.isBlank(l.Street) ? '' : l.Street);
+        gen.writeStringField('City',String.isBlank(l.City) ? '' : l.City);
+        gen.writeStringField('StateProvince',String.isBlank(l.State) ? '' : l.State);
+        gen.writeStringField('CountryCode',String.isBlank(l.Country) ? '' : l.Country);
+        gen.writeStringField('PostalCode',String.isBlank(l.PostalCode) ? '' : l.PostalCode);
+        gen.writeStringField('EducationLevelId',String.isBlank(l.Education_Level__c) ? '' :  l.Education_Level__c);
+        gen.writeStringField('AnticipatedStartDate',String.isBlank(l.Start_Term__c) ? '' : l.Start_Term__c);
+        gen.writeStringField('InstitutionSalesforceId',l.Account__c);
+        gen.writeStringField('ProgramProductSalesforceId',String.isBlank(l.Degree__c) ? '' : l.Degree__c);
+        gen.writeStringField('Notes',String.isBlank(l.Notes__c) ? '' : l.Notes__c);
+        gen.writeStringField('HasOptedOutOfEmail',l.HasOptedOutOfEmail ? 'true':'false');
+        gen.writeStringField('LeadGUID',String.isBlank(l.LeadGUID__c) ? '' : l.LeadGUID__c);
+        gen.writeStringField('ClosedReasonCode',String.isBlank(l.Closed_Reason_Code__c) ? '' : l.Closed_Reason_Code__c);
+        gen.writeStringField('ExternalId',String.isBlank(l.ExternalIdentifier__c) ? '' : l.ExternalIdentifier__c);
+        gen.writeStringField('LegacyGPLeadId',String.isBlank(l.GPLeadID__c) ? '' : l.GPLeadID__c);
+        gen.writeStringField('Utm_Campaign',String.isBlank(l.Utm_Campaign__c) ? '' : l.Utm_Campaign__c);
+		gen.writeStringField('Utm_Channel',String.isBlank(l.Utm_Channel__c) ? '' : l.Utm_Channel__c);
+		gen.writeStringField('Utm_Vendor',String.isBlank(l.Utm_Vendor__c ) ? '' : l.Utm_Vendor__c );
+        gen.writeStringField('StartTerm',retrievedStartTerm==null || String.isBlank(retrievedStartTerm.Name)? '' : retrievedStartTerm.Name);
+        gen.writeBooleanField('IsTest',l.IsTest__c);
+		gen.writeStringField('CurrentClientStatus',String.isBlank(l.Client_Status__c) ? '' : l.Client_Status__c);
+        gen.writeStringField('IsStealthApp',l.Stealth_App__c ? 'true':'false');
+        gen.writeStringField('RewarmingIndicator',String.isBlank(l.RewarmingIndicator__c ) ? '' : l.RewarmingIndicator__c);
+        gen.writeStringField('AppDialOutcome',String.isBlank(l.App_Dial_Outcome__c) ? '' : l.App_Dial_Outcome__c);
+        gen.writeStringField('RewarmingDialOutcome',String.isBlank(l.Rewarming_Dial_Outcome__c) ? '' : l.Rewarming_Dial_Outcome__c);
+        gen.writeNumberField('RewarmingContactAttempts',l.Rewarming_Contact_Attempts__c);
+        gen.writeBooleanField('HasOptedOutOfSMS',l.tdc_tsw__SMS_Opt_out__c);
+
+        gen.writeEndObject();
+    }
+    
+    public static void addAdditionalQuestions(Lead l,JSONGenerator gen) {
+        gen.writeFieldName('AdditionalQuestions');
+        gen.writeStartObject();
+        //gen.writeStringField('sfQuestion1','sfAnswer1');
+        gen.writeEndObject();
+    }
+
+    public static void leadServiceInsert(String leadid){
+
+        Lead l = Database.query('SELECT ' + String.join(new List<String>(Schema.getGlobalDescribe().get('Lead').getDescribe().fields.getMap().keySet()), ',') + ' FROM Lead WHERE Id =: leadid');
+
+        System.debug('leadServiceInsert: lead to be inserted:' + l);
+        
+        JSONGenerator gen = JSON.createGenerator(false);
+        gen.writeStartObject();
+
+        //Authentication and transaction
+        EddyLeadHelper.addMessageHeaders(gen);
+
+        //Lead body
+        EddyLeadHelper.addLeadInfo(l, gen);
+
+        //Lead Additional questions/answers
+        EddyLeadHelper.addAdditionalQuestions(l, gen);
+        
+        gen.writeEndObject();
+        
+        String leadJson = gen.getAsString();
+        System.debug('leadServiceInsert: JSON lead generated' + leadJson);
+        
+        // make the asynchronous web service callout
+        WebServiceCallout.callService('/api/emslead/createfromsalesforce', leadJson, l.id);
+    }
+
+    public static void leadServiceUpdate(String leadid){
+
+        JSONGenerator gen = JSON.createGenerator(false);
+        gen.writeStartObject();
+
+        //Authentication and transaction
+        EddyLeadHelper.addMessageHeaders(gen);
+
+        //Lead body
+        EddyLeadHelper.addLeadId(leadid, gen);
+
+        gen.writeEndObject();
+        
+        String leadJson = gen.getAsString();
+        System.debug('leadServiceUpdate: JSON lead generated' + leadJson);
+        
+        // make the asynchronous web service callout
+        WebServiceCallout.callService('/api/emslead/updatefromsalesforcebyid', leadJson, leadid);    
+    }
+   
+}

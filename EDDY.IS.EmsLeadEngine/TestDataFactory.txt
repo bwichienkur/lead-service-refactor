@@ -1,0 +1,73 @@
+@isTest
+public class TestDataFactory {
+    
+    public static Lead GetNewTestLead() {
+        
+        Account testAccount = new Account(Name='TestAccount');
+        insert testAccount;
+        
+        Start_Term__c testStartTerm = new Start_Term__c();
+        testStartTerm.Account__c = testAccount.Id;
+        insert testStartTerm;
+        
+        String userEmail = 'testuser' + DateTime.now().getTime() + '@test.com';
+        User testAssignedAdvisor = new User();
+        testAssignedAdvisor.Alias = 'testuser';
+        testAssignedAdvisor.Username = userEmail;
+        testAssignedAdvisor.Email = userEmail;
+        testAssignedAdvisor.FirstName = 'test';
+        testAssignedAdvisor.LastName = 'user';
+        testAssignedAdvisor.LocaleSidKey = 'en_US';
+        testAssignedAdvisor.LanguageLocaleKey = 'en_US';
+        testAssignedAdvisor.EmailEncodingKey = 'ISO-8859-1';
+        testAssignedAdvisor.TimeZoneSidKey = 'America/New_York';
+        Profile retrievedProfile = [select id from profile where name='Standard User']; 
+        testAssignedAdvisor.ProfileId = retrievedProfile.Id;
+        insert testAssignedAdvisor;
+        
+        System.debug(testAssignedAdvisor.Id);
+        
+        Lead testLead = new Lead();
+        testLead.FirstName = 'test';
+        testLead.LastName = 'tester';
+        testLead.Email = 'testlead' + DateTime.now().getTime() + '@test.com';
+        testLead.Company = 'EDDY';
+        testLead.Account__c = testAccount.Id;
+        testLead.Start_Term__c = testStartTerm.Id;
+        //testLead.Assigned_Advisor__c = testAssignedAdvisor.Id;
+                
+        return testLead;
+    }
+    
+    public static List<Lead> GetTestLeadsForCountryAbbreviation()
+    {
+        List<String> countries = new List<String> {'United States', 'Canada'};
+        List<Lead> testLeads = new List<Lead>();
+            
+        for (String country: countries)	{
+            Lead testLead = TestDataFactory.GetNewTestLead();
+            testLead.Country = country;
+            testLeads.add(testLead);
+        }
+            
+        return testLeads;
+    }
+    
+    public static Lead GetNewTestAPILead() {
+        Lead testLead = TestDataFactory.GetNewTestLead();
+        testLead.From_API__c = true;
+        return testLead;
+    }
+    
+    public static Lead GetNewTestUnitedStatesLead() {
+        Lead testLead = TestDataFactory.GetNewTestLead();
+        testLead.Country = 'United States';
+        return testLead;
+    }
+    
+    public static Lead GetNewTestCanadianLead() {
+        Lead testLead = TestDataFactory.GetNewTestLead();
+        testLead.Country = 'Canada';
+        return testLead;
+    }
+}

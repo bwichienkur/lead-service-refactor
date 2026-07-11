@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>EMS-Lead Service test</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+    <script src="/Clients/Scripts/jquery.jsonPresenter.js"></script>
+    <link rel="stylesheet" href="/Clients/Content/jquery.jsonPresenter.css" />
+    <script language="javascript" type="text/javascript">
+        function createGuid() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function sendRequest() {
+            var Request = {
+                "AuthenticationToken": "79E209BC-666B-4660-B566-732B81FC9AA2",
+                "TransactionId": createGuid(),
+                "Lead": {
+                    "SalesforceId": "AAQf200001a4RQ5EAA",
+                    "CurrentStatus": "New Lead",
+                    "CurrentSubStatus": "",
+                    "CurrentState": "Open",
+                    "LeadOwner": "Eli",
+                    "ClosedReasonCode": "KillIt",
+                    "ExternalId": "123",
+                    "FirstName": "MyUpdatedName",
+                    "LastName": "MyUpdatedLast",
+                    "Email": "MyUpdatedEmail@gmail.com",
+                    "Phone1": "5612143292",
+                    "Phone2": "5612143292",
+                    "Address1": "13020 NW Military",
+                    "Address2": "",
+                    "City": "Beverly Hills",
+                    "StateProvince": "CA",
+                    "CountryCode": "US",
+                    "PostalCode": "90210",
+                    "InstitutionSalesforceId": "0012100000YGCotAAH",
+                    "ProgramProductSalesforceId": "",
+                    "EducationLevelId": "1",
+                    "AnticipatedStartDate": ""
+                },
+                "AdditionalQuestions": { "Question1": "Answer1Updated", "Question2": "Answer2Updated", "Question3": "Answer3Updated", "Question4": "NewQuestion" }
+            };
+
+            var StartMilliseconds = new Date().getTime();
+            $.ajax({
+                type: 'POST',
+                //url: "/api/test/Echo",
+                url: "http://emslead.dev.educationdynamics.com/api/test/Echo",
+                data: JSON.stringify(Request),
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                cache: false,
+                success: function (data) {
+                    $("#result-container").html('</br></br>Time Elapsed = ' + (new Date().getTime() - StartMilliseconds) + ' ms</br></br>Result:');
+                    $('#json-container').jsonPresenter('destroy').jsonPresenter({ json: data }).jsonPresenter('expand', 0);
+                },
+                error: function (request, error) {
+                    $("#result-container").html('</br></br>Error =<br/>');
+                    $('#json-container').jsonPresenter('destroy').jsonPresenter({ json: request }).jsonPresenter('expand', 0);
+
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <button onclick="sendRequest()" name="btnTest">Send Request</button>
+    <div id="result-container"></div>
+    <div id="json-container"></div>
+</body>
+</html>

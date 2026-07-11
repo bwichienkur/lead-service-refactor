@@ -1,0 +1,27 @@
+﻿
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Spatial;
+
+namespace EDDY.IS.EmsLeadEngine.Core.DataModel
+{
+    [Table("FB.AudienceLeadEvent")]
+    public class AudienceLeadEvent
+    {
+        public int AudienceLeadEventId { get; set; }
+        public long? LeadId { get; set; }
+        public long? EMSLeadId { get; set; }
+        public int AudienceId { get; set; }
+        public int AudienceEventId { get; set; }
+        public int AudienceMessageStatusId { get; set; }
+        public string Message { get; set; }
+        public string Response { get; set; }
+        public int MessageAttemptCount { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+
+        public bool IsEnabled { get; set; }
+    }
+}

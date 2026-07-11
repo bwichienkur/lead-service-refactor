@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>EMS-Lead Service test</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+    <script src="/Clients/Scripts/jquery.jsonPresenter.js"></script>
+    <link rel="stylesheet" href="/Clients/Content/jquery.jsonPresenter.css" />
+    <script language="javascript" type="text/javascript">
+        function createGuid() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function sendRequest() {
+           
+            var Request = {
+                "AuthenticationToken": "79E209BC-666B-4660-B566-732B81FC9AA2",
+                "TransactionId": "8305ff44-430f-4ce7-77a6-9ef18a04a9b3",
+                "Lead": {
+                    "SalesforceId": "00Qq000000AivqaEAB",
+                    "CurrentStatus": "New Lead",
+                    "CurrentSubStatus": "",
+                    "CurrentClientStatus": "Herro",
+                    "CurrentState": "Active",
+                    "LeadOwner": "",
+                    "FirstName": "BrightTestPostUp2",
+                    "LastName": "SFCreate",
+                    "Email": "herroworld12381938918391@gmail.com",
+                    "Phone1": "5612043290",
+                    "Phone2": "",
+                    "Address1": "3020 North Federal Highway",
+                    "City": "Fort Lauderdale",
+                    "StateProvince": "FL",
+                    "CountryCode": "United States",
+                    "PostalCode": "33306",
+                    "EducationLevelId": "9",
+                    "AnticipatedStartDate": "",
+                    "InstitutionSalesforceId": "001f400000zTNc9AAG",
+                    //"ProgramProductSalesforceId": "a0H21000006v8g7EAA",
+                    "Notes": "<p>Notes are fun 1</p><p>Another note.</p><p>Thank you :)</p>",
+                    "UTM_Channel": "testchannel",
+                    "UTM_Campaign": "testcampaign",
+                    "UTM_Vendor": "testvendor"
+                    
+                },
+                "AdditionalQuestions": {
+                    "sfQuestion1": "sfAnswer1",
+                    "sfQuestion2": "sfAnswer2"
+                }
+            };
+
+            var StartMilliseconds = new Date().getTime();
+            $.ajax({
+                type: 'POST',
+                url: "/api/emslead/createfromsalesforce",
+                data: JSON.stringify(Request),
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                cache: false,
+                success: function (data) {
+                    $("#result-container").html('</br></br>Time Elapsed = ' + (new Date().getTime() - StartMilliseconds) + ' ms</br></br>Result:');
+                    $('#json-container').jsonPresenter('destroy').jsonPresenter({ json: data }).jsonPresenter('expand', 0);
+                },
+                error: function (request, error) {
+                    $("#result-container").html('</br></br>Error =<br/>');
+                    $('#json-container').jsonPresenter('destroy').jsonPresenter({ json: request }).jsonPresenter('expand', 0);
+                   
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <button onclick="sendRequest()" name="btnTest">Send Request</button>
+    <div id="result-container"></div>
+    <div id="json-container"></div>
+</body>
+</html>

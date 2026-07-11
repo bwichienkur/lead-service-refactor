@@ -1,0 +1,52 @@
+public class WebServiceCallout {
+
+    //private static String ServiceURL = 'http://emslead.dev.educationdynamics.com';
+    
+    private static String ServiceURL =     Label.LeadEngineServiceURL;
+    
+    private static HttpRequest GetHttpRequest(String action, String jsonMessage){
+        HttpRequest req = new HttpRequest();    
+        req.setEndpoint(ServiceURL  + action);
+        req.setMethod('POST');
+        req.setHeader('Accept-Encoding', 'gzip,deflate');
+        req.setHeader('Content-Encoding', 'gzip');
+        req.setHeader('Content-type', 'application/json; charset=utf-8');
+        req.setHeader('Content-Length', String.valueOf(jsonMessage.length()));
+        req.setBody(jsonMessage);
+        req.setCompressed(true); // otherwise limit of 32000
+        
+        return req;
+    }
+
+    @future (callout=true)
+    public static void callService(String action, String jsonLead, String leadId) {
+        
+        System.debug('callService ' + action + ' :' + jsonLead);
+        HttpRequest req = GetHttpRequest(action,jsonLead);
+		req.setTimeout(60000);
+        HttpResponse res = new HttpResponse();
+        Http http = new Http();
+        
+        // checking if a test is running is not optimal but better than refactoring to support mocks
+        if (Test.isRunningTest()) {
+            return;
+        }
+
+        try {
+            res = http.send(req);
+            System.debug(res.toString());
+            System.debug('callService STATUS:' + res.getStatus());
+            System.debug('callService STATUS_CODE:' + res.getStatusCode());
+            String responseString = res.getBody();
+            System.debug('callService response:' + responseString );
+			//EddyLeadHelper.insertLog('Function:callService ' + action, leadId, 'callService response: '+ responseString);
+        } catch(System.CalloutException e) {
+            System.debug('callService error: '+ e);
+            System.debug(res.toString());
+            String responseString = res.getBody();
+            System.debug('callService response:' + responseString );
+			EddyLeadHelper.insertLog('Function:callService ' + action, leadId, 'callService error: '+ e);
+			EddyLeadHelper.insertLog('Function:callService ' + action, leadId, 'callService error response: '+ responseString);
+        }
+    }
+}

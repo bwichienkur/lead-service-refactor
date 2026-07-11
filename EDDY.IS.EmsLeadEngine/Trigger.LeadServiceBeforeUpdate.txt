@@ -1,0 +1,11 @@
+trigger LeadServiceBeforeInsert on Lead (before insert) {
+    for (Lead l : Trigger.new) {
+		l.LeadGUID__c = String.isBlank(l.LeadGUID__c) ? EddyLeadHelper.getGUID() : l.LeadGUID__c;
+        if(!String.isBlank(l.Country)){
+			if(l.Country == 'United States')
+			  l.Country = 'US';
+			else if(l.Country == 'Canada')
+			 l.Country = 'CA';
+		} 
+    }
+}

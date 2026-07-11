@@ -1,0 +1,72 @@
+@isTest
+public class LeadServiceTriggerTest {
+	
+    @isTest 
+    static void TestInsertTriggerWithLeadNotComingFromAPI() {
+        Test.startTest();
+    	Lead testLead = TestDataFactory.GetNewTestLead();
+        insert testLead;
+        Test.stopTest();
+    }
+    
+    @isTest 
+    static void TestInsertAndUpdateTriggerWithLeadComingFromAPI() {
+    	Test.startTest();
+        Lead testLead = TestDataFactory.GetNewTestAPILead();
+        insert testLead;
+        Lead testLeadFromDB = [select Id, From_API__c from Lead where Id=:testLead.Id];
+        testLeadFromDB.From_API__c = true;
+        update testLeadFromDB;
+        Test.stopTest();
+    }
+    
+    @isTest 
+    static void TestInsertAndUpdateTriggerUnitedStatesAbbreviation() {
+    	Test.startTest();
+        Lead testLead = TestDataFactory.GetNewTestLead();
+        insert testLead;
+        Lead testLeadFromDB = [select Id, Country from Lead where Id=:testLead.Id];
+        testLeadFromDB.Country = 'United States';
+        update testLeadFromDB;
+        Test.stopTest();
+    }
+        
+    
+    @isTest 
+    static void TestInsertAndUpdateTriggerCanadaAbbreviation() {
+    	Test.startTest();
+        Lead testLead = TestDataFactory.GetNewTestLead();
+        insert testLead;
+        Lead testLeadFromDB = [select Id, Country from Lead where Id=:testLead.Id];
+        testLeadFromDB.Country = 'Canada';
+        update testLeadFromDB;
+        Test.stopTest();
+    }
+    
+    
+    @isTest 
+    static void TestEddyLeadHelperInsert() {
+        Test.startTest();
+    	Lead testLead = TestDataFactory.GetNewTestLead();
+        insert testLead;
+        EddyLeadHelper.leadServiceInsert(testLead.Id);
+        Test.stopTest();
+    }
+    
+    @isTest 
+    static void TestEddyLeadHelperUpdate() {
+        Test.startTest();
+    	Lead testLead = TestDataFactory.GetNewTestLead();
+        insert testLead;
+        EddyLeadHelper.leadServiceUpdate(testLead.Id);
+        Test.stopTest();
+    }
+    
+    @isTest 
+    static void TestNorthAmericanCountryAbbreviation() {
+        Test.startTest();
+        List<Lead> leads = TestDataFactory.GetTestLeadsForCountryAbbreviation();
+        insert leads;
+        Test.stopTest();
+    }
+}

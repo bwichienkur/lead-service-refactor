@@ -1,0 +1,47 @@
+trigger LeadServiceInsert on Lead (after insert) {
+    System.debug('LeadInsert trigger called');
+    for (Lead l : Trigger.new) {
+
+	 try {
+			//EddyLeadHelper.insertLog('Trigger:LeadServiceInsert', l.id, 'LeadServiceInsert called lead is' +  l);
+
+			//Avoid calling lead service if lead insert is coming from API
+			if(l.From_API__c==true) {
+				System.debug('LeadServiceInsert: Skipping calling LeadService, lead coming from AzureFunction l.From_API__c==true ' + l);
+				//EddyLeadHelper.insertLog('Trigger:LeadServiceInsert', l.id, 'Skipping calling LeadService, lead coming from AzureFunction l.From_API__c==true ');
+				Lead updLead = [select id from lead where id = :l.id];
+				updLead.From_API__c = false;
+				update updLead;
+				continue;
+			}
+
+			JSONGenerator gen = JSON.createGenerator(false);
+        
+			gen.writeStartObject();
+
+			//Authentication and transaction
+			EddyLeadHelper.addMessageHeaders(gen);
+
+			//Lead body
+			EddyLeadHelper.addLeadInfo(l, gen);
+
+			//Lead Additional questions/answers
+			EddyLeadHelper.addAdditionalQuestions(l, gen);
+        
+			gen.writeEndObject();
+        
+			String leadJson = gen.getAsString();
+			System.debug('LeadServiceInsert: JSON lead generated' + leadJson);
+			//EddyLeadHelper.insertLog('Trigger:LeadServiceInsert', l.id, 'LeadServiceInsert: JSON lead generated, calling service...');
+         
+         
+         	// make the asynchronous web service callout
+         	//WebServiceCallout.callService('/api/test/Echo', leadJson);
+         	WebServiceCallout.callService('/api/emslead/createfromsalesforce', leadJson, l.id);        
+		}
+		catch(System.Exception e) {
+            System.debug('Trigger:LeadServiceInsert error: '+ e);
+			EddyLeadHelper.insertLog('Trigger:LeadServiceInsert', l.id, 'LeadServiceInsert general exception: '+ e);
+        }
+    }
+}

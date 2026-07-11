@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>EMS-Lead Service test</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+    <script src="/Clients/Scripts/jquery.jsonPresenter.js"></script>
+    <link rel="stylesheet" href="/Clients/Content/jquery.jsonPresenter.css" />
+    <script language="javascript" type="text/javascript">
+        function createGuid() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function sendRequest() {
+            var ExternalId = createGuid();
+            var Request = {
+                "AuthenticationToken": "79E209BC-666B-4660-B566-732B81FC9AA2",
+                "TransactionId": createGuid(),
+                "ProcessRequestList": [{
+                    "Lead": {
+                        "LeadStatusId": "",
+                        "LeadSubStatusId": "",
+                        "ExternalId": "",
+                        "FirstName": "fbtest." + Date.now(),
+                        "LastName": "fbtest." + Date.now(),
+                        "Email": "jonfbtester@educationdynamics.com",
+                        "Phone1": "5618662113",
+                        "Phone2": "",
+                        "Address1": "890 over thur",
+                        "Address2": "",
+                        "City": "Wellington",
+                        "StateProvince": "FL",
+                        "PostalCode" : "33414",
+                        "EMSInstitutionId": "4",
+                        "utm_channel": "",
+                        "utm_vendor": "",
+                        "utm_campaign": "",
+                        "Notes": "",
+                        "ClientNotes": "",
+                        "ClientStatus": "App Accepted",
+                        "LeadGUID" : "32fff596-45bb-4a03-8ab7-9ba52b3018d5"
+                    },
+                    "LeadAction": "Insert",
+                    "LeadUniqueKey": "LeadGUID",
+                    "SubTransactionId": createGuid()
+                },
+                //{
+                //    "Lead": {
+                //        "LeadStatusId": "3",
+                //        "LeadSubStatusId": "",
+                //        "ExternalId": ExternalId,
+                //        "FirstName": "NewExchangeLead." + createGuid(),
+                //        "LastName": "LastName." + createGuid(),
+                //        "Email": createGuid() + "@gmail.com",
+                //        "Phone1": "5612143293",
+                //        "Phone2": "5612143293",
+                //        "Address1": "13025 NW Military",
+                //        "Address2": "",
+                //        "City": "Wellington",
+                //        "StateProvince": "FL",
+                //        "PostalCode": "33414",
+                //        "CountryCode": "US",
+                //        "EMSInstitutionId": "40",
+                //        "ProgramId": "256667",
+                //        "EducationLevelId": "2",
+                //        "utm_channel": "",
+                //        "utm_vendor": "",
+                //        "utm_campaign": "",
+                //        "AnticipatedStartDate": ""
+                //    },
+                //    "AdditionalQuestions": { "Question1": "Answer1", "Question2": "Answer2", "Question3": "Answer3" },
+                //    "LeadAction": "Update",
+                //    "LeadUniqueKey": "ExternalId",
+                //    "SubTransactionId": createGuid()
+                //    }
+                ]
+            };
+
+            var StartMilliseconds = new Date().getTime();
+            $.ajax({
+                type: 'POST',
+                url: "/api/emslead/processfromdataexchange",
+                data: JSON.stringify(Request),
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                cache: false,
+                success: function (data) {
+                    $("#result-container").html('</br></br>Time Elapsed = ' + (new Date().getTime() - StartMilliseconds) + ' ms</br></br>Result:');
+                    $('#json-container').jsonPresenter('destroy').jsonPresenter({ json: data }).jsonPresenter('expand', 0);
+                },
+                error: function (request, error) {
+                    $("#result-container").html('</br></br>Error =<br/>');
+                    $('#json-container').jsonPresenter('destroy').jsonPresenter({ json: request }).jsonPresenter('expand', 0);
+
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <button onclick="sendRequest()" name="btnTest">Send Request</button>
+    <div id="result-container"></div>
+    <div id="json-container"></div>
+</body>
+</html>

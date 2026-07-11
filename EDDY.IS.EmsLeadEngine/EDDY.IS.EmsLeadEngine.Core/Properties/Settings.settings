@@ -1,0 +1,48 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="EDDY.IS.EmsLeadEngine.Core.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ServiceBusConnectionString" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Endpoint=sb://eddysbntest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=2x7gSwKi3rees9waXBcHaYkr4EAJYP6movHGgudWyog=</Value>
+    </Setting>
+    <Setting Name="InsertQueueName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">sfleadcreate</Value>
+    </Setting>
+    <Setting Name="UpdateQueueName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">sfleadupdate</Value>
+    </Setting>
+    <Setting Name="UseSalesforceSandbox" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="LogInformationMessages" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CacheRefreshMinutes" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">30</Value>
+    </Setting>
+    <Setting Name="FBConversionConnection" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">DefaultEndpointsProtocol=https;AccountName=joneddysa;AccountKey=gVkotDbEcNRQX5i7NL/Y1nuUVC9x+ZnNh8YbHaZwm8vKcMzYY0qRqrRXTXiOPDLcDfP1E/9rCpz8HZsU+pf5Kg==;EndpointSuffix=core.windows.net</Value>
+    </Setting>
+    <Setting Name="FBConversionQueueName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">fbconversionapi</Value>
+    </Setting>
+    <Setting Name="FBAudienceQueueName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">fbaudience</Value>
+    </Setting>
+    <Setting Name="EventGridTopicKey" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">/SXX84GHsauvghL6T0/uJLfpmuk+Lg367JFr61vHzWw=</Value>
+    </Setting>
+    <Setting Name="GoogleConversionQueueName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">googleconversionapi</Value>
+    </Setting>
+    <Setting Name="GoogleConversionConnection" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">DefaultEndpointsProtocol=https;AccountName=saeddygooconvapidev;AccountKey=TOmGf9gQ4SgJ4s/jXXqy73gWP+fLm1T/zLP8lyGAEtJf65+L5pMhbOTeods+zGyVGpHYVfWPWZmDzwqq+tLo9w==;EndpointSuffix=core.windows.net</Value>
+    </Setting>
+    <Setting Name="GoogleAudienceQueueName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">gooaudiencedev</Value>
+    </Setting>
+    <Setting Name="GoogleAudienceConnection" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">DefaultEndpointsProtocol=https;AccountName=saeddygooconvapidev;AccountKey=TOmGf9gQ4SgJ4s/jXXqy73gWP+fLm1T/zLP8lyGAEtJf65+L5pMhbOTeods+zGyVGpHYVfWPWZmDzwqq+tLo9w==;EndpointSuffix=core.windows.net</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
